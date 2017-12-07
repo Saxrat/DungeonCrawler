@@ -6,6 +6,7 @@ import items.Item;
 import items.TrainingSword;
 import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PImage;
 
 public class Main extends PApplet {
 	public float x, y, z;
@@ -20,6 +21,8 @@ public class Main extends PApplet {
 	public int mode = 0;
 	public float doorX, doorZ;
 
+	PImage test;
+
 	int[][] floor = new int[ARRAYSIZE][ARRAYSIZE];
 
 	public ArrayList<Item> inventory = new ArrayList<Item>();
@@ -27,9 +30,11 @@ public class Main extends PApplet {
 	public void settings() {
 		size(600, 600, P3D);
 		fullScreen();
+
 	}
 
 	public void setup() {
+		test = loadImage("/Users/student/Downloads/bee.jpg");
 		generateNewLevel();
 		inventory.add(new TrainingSword());
 	}
@@ -48,7 +53,33 @@ public class Main extends PApplet {
 
 	public void draw() {
 		if (mode == 1) {
-			
+			background(0);
+			camera(0, HEIGHT, 0, -20, HEIGHT, 0, 0, 1, 0);
+			fill(255);
+			int count = 0;
+
+			for (int a = 0; a < 4; a++) {
+				for (int i = 0; i < 6; i++) {
+
+					count = count + 1;
+					translate(-100, -17.5f + a * 25, 65 - i * 25);
+					beginShape();
+					texture(test);
+					vertex(0, 10, -10, 600, 600);
+					vertex(0, 10, 10, 0, 600);
+					vertex(0, -10, 10, 0, 0);
+					vertex(0, -10, -10, 600, 0);
+					endShape();
+					translate(100, 17.5f - a * 25, -(65 - i * 25));
+					if (count >= inventory.size()) {
+						break;
+					}
+				}
+				if (count >= inventory.size()) {
+					break;
+				}
+			}
+
 		}
 		if (mode == 0) {
 			background(255);
@@ -62,20 +93,26 @@ public class Main extends PApplet {
 			for (int i = 0; i < ARRAYSIZE; i++) {
 				for (int j = 0; j < ARRAYSIZE; j++) {
 					if (floor[i][j] == 0) {
+						fill(100);
 						translate(i * 100, 0, j * 100);
 						box(100);
 						translate(-i * 100, 0, -j * 100);
+					}
+					if (floor[i][j] == 2) {
+						translate(i * 100, 45, j * 100);
+						drawChest();
+						translate(-i * 100, -45, -j * 100);
 					}
 					if (floor[i][j] == 3) {
 						translate(i * 100, 45, j * 100);
 						fill(100);
 						box(10);
 						translate(-i * 100, -45, -j * 100);
-						translate(i * 100, (float) 47.5, j * 100);
+						translate(i * 100, (float) 42.5, j * 100);
 						fill(0);
 						box(5);
 						fill(51);
-						translate(-i * 100, -47.5f, -j * 100);
+						translate(-i * 100, -42.5f, -j * 100);
 					}
 				}
 			}
@@ -133,12 +170,18 @@ public class Main extends PApplet {
 		}
 	}
 
-	public void fillFloor(int x, int z, int size, int value) {
+	public void fillFloor(int x, int z, int size) {
+
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				if (x + i < floor.length && z + j < floor[0].length) {
+					boolean chest = .95 < (Math.random());
 					if (x + i > 0 && z + j > 0) {
-						floor[x + i][z + j] = value;
+						if(chest) {
+							floor[x + i][z + j] = 2;
+						}else {
+						floor[x + i][z + j] = 1;
+						}
 					}
 				}
 			}
@@ -160,7 +203,7 @@ public class Main extends PApplet {
 		for (int a = 0; a < 30; a++) {
 			testX = (int) (Math.random() * 17 + 1);
 			testZ = (int) (Math.random() * 17 + 1);
-			fillFloor(testX, testZ, 3, 1);
+			fillFloor(testX, testZ, 3);
 		}
 		for (int i = 0; i < ARRAYSIZE; i++) {
 			for (int j = 0; j < ARRAYSIZE; j++) {
@@ -216,10 +259,51 @@ public class Main extends PApplet {
 			if (mode == 0) {
 				mode = 1;
 			} else {
+				translate(x, 0, z);
 				mode = 0;
 			}
 		}
 	}
 
-	
+	public void drawChest() {
+		fill(70,40,5);
+		
+		beginShape();
+		vertex(20, 0, 10);
+		vertex(-20, 0, 10);
+		vertex(-20, 0, -10);
+		vertex(20, 0, -10);
+		endShape();
+		beginShape();
+		vertex(-20, 10, -10);
+		vertex(-20, 10, 10);
+		vertex(-20, 0, 10);
+		vertex(-20, 0, -10);
+		endShape();
+		beginShape();
+		vertex(20, 10, -10);
+		vertex(20, 10, 10);
+		vertex(20, 0, 10);
+		vertex(20, 0, -10);
+		endShape();
+		beginShape();
+		vertex(20, 10, -10);
+		vertex(-20, 10, -10);
+		vertex(-20, 0, -10);
+		vertex(20, 0, -10);
+		endShape();
+		beginShape();
+		vertex(20, 10, 10);
+		vertex(-20, 10, 10);
+		vertex(-20, 0, 10);
+		vertex(20, 0, 10);
+		endShape();
+		beginShape();
+		vertex(20, 10, 10);
+		vertex(20, 10, -10);
+		vertex(-20, 10, -10);
+		vertex(-20, 10, 10);
+		endShape();
+		
+	}
 }
